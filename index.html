@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask The Oracle</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      min-height: 100vh;
+      background: #000508;
+      overflow-x: hidden;
+    }
+    #oracle-root {
+      position: relative;
+      width: 100%;
+      min-height: 100vh !important;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #051428 0%, #010a14 70%, #000508 100%);
+      border-radius: 0px !important;
+      box-sizing: border-box;
+      padding: 48px 24px;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #oracle-rain {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.35;
+    }
+
+    .oracle-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .oracle-title {
+      margin: 0 0 36px 0;
+      font-family: "Consolas", "Courier New", monospace;
+      font-weight: 700;
+      font-size: clamp(28px, 5vw, 44px);
+      letter-spacing: 0.35em;
+      color: #6fe3ff;
+      text-shadow: 0 0 12px rgba(111, 227, 255, 0.85), 0 0 28px rgba(60, 170, 255, 0.5);
+    }
+
+    .oracle-search-wrap {
+      position: relative;
+      width: min(560px, 90vw);
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .oracle-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(80, 190, 255, 0.35);
+    }
+    .ring-1 { width: 220px; height: 220px; animation: spin-cw 14s linear infinite; border-style: dashed; }
+    .ring-2 { width: 170px; height: 170px; animation: spin-ccw 10s linear infinite; border-color: rgba(80, 190, 255, 0.5); }
+    .ring-3 { width: 260px; height: 260px; animation: spin-cw 22s linear infinite; border-color: rgba(80, 190, 255, 0.2); }
+
+    @keyframes spin-cw {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes spin-ccw {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-360deg); }
+    }
+
+    .oracle-search-form {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      width: min(480px, 82vw);
+      background: rgba(4, 18, 34, 0.85);
+      border: 1px solid rgba(110, 225, 255, 0.6);
+      border-radius: 28px;
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 0 18px rgba(80, 190, 255, 0.35), inset 0 0 12px rgba(80, 190, 255, 0.08);
+    }
+
+    .oracle-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #d8f4ff;
+      font-size: 14px;
+      padding: 10px 8px;
+    }
+    .oracle-search-input::placeholder { color: rgba(180, 220, 240, 0.55); }
+
+    .oracle-search-btn {
+      background: rgba(80, 190, 255, 0.15);
+      border: 1px solid rgba(110, 225, 255, 0.6);
+      color: #9fe8ff;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+    }
+    .oracle-search-btn:hover { background: rgba(80, 190, 255, 0.32); }
+
+    .oracle-subtitle {
+      margin: 28px 0 40px 0;
+      color: rgba(190, 225, 245, 0.85);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .oracle-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+    }
+
+    .oracle-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: rgba(210, 235, 250, 0.9);
+      width: 84px;
+    }
+
+    .oracle-icon-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(110, 225, 255, 0.45);
+      background: rgba(80, 190, 255, 0.06);
+      color: #8fe0ff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .oracle-icon:hover .oracle-icon-badge {
+      transform: translateY(-3px);
+      box-shadow: 0 0 16px rgba(110, 225, 255, 0.55);
+      background: rgba(80, 190, 255, 0.16);
+    }
+
+    .oracle-icon-label {
+      font-size: 12.5px;
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 480px) {
+      .oracle-icons { gap: 18px; }
+      .oracle-icon { width: 70px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="oracle-root">
+  <canvas id="oracle-rain"></canvas>
+
+  <div class="oracle-content">
+    <h1 class="oracle-title">ASK THE ORACLE</h1>
+
+    <div class="oracle-search-wrap">
+      <div class="oracle-ring ring-1"></div>
+      <div class="oracle-ring ring-2"></div>
+      <div class="oracle-ring ring-3"></div>
+
+      <form id="oracle-search-form" class="oracle-search-form" autocomplete="off">
+        <input
+          id="oracle-search-input"
+          type="text"
+          class="oracle-search-input"
+          placeholder="Search across all knowledge, clients, standards, runbooks..."
+        />
+        <button type="submit" class="oracle-search-btn" aria-label="Search">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <p class="oracle-subtitle">The answers you need. The knowledge you trust.</p>
+
+    <div class="oracle-icons">
+      <a class="oracle-icon" href="#" data-key="clients">
+        <span class="oracle-icon-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </span>
+        <span class="oracle-icon-label">Clients</span>
+      </a>
+      <a class="oracle-icon" href="#" data-key="standards">
+        <span class="oracle-icon-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"></path>
+            <path d="M9 12l2 2 4-4"></path>
+          </svg>
+        </span>
+        <span class="oracle-icon-label">Standards</span>
+      </a>
+      <a class="oracle-icon" href="#" data-key="runbooks">
+        <span class="oracle-icon-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+            <path d="M14 2v5h5"></path>
+            <line x1="8" y1="13" x2="16" y2="13"></line>
+            <line x1="8" y1="17" x2="16" y2="17"></line>
+          </svg>
+        </span>
+        <span class="oracle-icon-label">Runbooks</span>
+      </a>
+      <a class="oracle-icon" href="#" data-key="projects">
+        <span class="oracle-icon-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 7l3-4h12l3 4"></path>
+            <path d="M3 7h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"></path>
+            <line x1="3" y1="11" x2="21" y2="11"></line>
+          </svg>
+        </span>
+        <span class="oracle-icon-label">Projects</span>
+      </a>
+      <a class="oracle-icon" href="#" data-key="templates">
+        <span class="oracle-icon-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="4" y="3" width="16" height="18" rx="1"></rect>
+            <line x1="8" y1="8" x2="16" y2="8"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+            <line x1="8" y1="16" x2="12" y2="16"></line>
+          </svg>
+        </span>
+        <span class="oracle-icon-label">Templates</span>
+      </a>
+      <a class="oracle-icon" href="#" data-key="vendors">
+        <span class="oracle-icon-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 21c4-3 7-6.5 7-10.5A7 7 0 0 0 5 10.5C5 14.5 8 18 12 21z"></path>
+            <circle cx="12" cy="10.5" r="2.3"></circle>
+          </svg>
+        </span>
+        <span class="oracle-icon-label">Vendors</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var SEARCH_RESULTS_URL = "https://btcoza.sharepoint.com/sites/Oracle";
+  var LIBRARY_URLS = {
+    clients:   "https://btcoza.sharepoint.com/sites/Oracle/Clients/Forms/AllItems.aspx",
+    standards: "https://btcoza.sharepoint.com/sites/Oracle/Standards/Forms/AllItems.aspx",
+    runbooks:  "https://btcoza.sharepoint.com/sites/Oracle/Runbooks/Forms/AllItems.aspx",
+    projects:  "https://btcoza.sharepoint.com/sites/Oracle/Projects/Forms/AllItems.aspx",
+    templates: "https://btcoza.sharepoint.com/sites/Oracle/Templates/Forms/AllItems.aspx",
+    vendors:   "https://btcoza.sharepoint.com/sites/Oracle/Vendors/Forms/AllItems.aspx"
+  };
+
+  var root = document.getElementById("oracle-root");
+  if (!root) return;
+
+  var icons = root.querySelectorAll(".oracle-icon");
+  icons.forEach(function (el) {
+    var key = el.getAttribute("data-key");
+    if (LIBRARY_URLS[key]) el.setAttribute("href", LIBRARY_URLS[key]);
+  });
+
+  var form = document.getElementById("oracle-search-form");
+  var input = document.getElementById("oracle-search-input");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var q = input.value.trim();
+    if (!q) return;
+    window.location.href = SEARCH_RESULTS_URL + "?q=" + encodeURIComponent(q);
+  });
+
+  var canvas = document.getElementById("oracle-rain");
+  var ctx = canvas.getContext("2d");
+  var chars = "01";
+  var fontSize = 14;
+  var columns, drops;
+
+  function resize() {
+    canvas.width = root.clientWidth;
+    canvas.height = root.clientHeight;
+    columns = Math.floor(canvas.width / fontSize);
+    drops = new Array(columns).fill(1);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  function draw() {
+    ctx.fillStyle = "rgba(1, 8, 16, 0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(80, 190, 255, 0.55)";
+    ctx.font = fontSize + "px monospace";
+    for (var i = 0; i < drops.length; i++) {
+      var text = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 60);
+})();
+</script>
+</body>
+</html>
