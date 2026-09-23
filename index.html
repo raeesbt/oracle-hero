@@ -186,9 +186,10 @@
       <div class="oracle-ring ring-2"></div>
       <div class="oracle-ring ring-3"></div>
 
-      <form id="oracle-search-form" class="oracle-search-form" autocomplete="off">
+      <form id="oracle-search-form" class="oracle-search-form" method="GET" target="_top" autocomplete="off">
         <input
           id="oracle-search-input"
+          name="q"
           type="text"
           class="oracle-search-input"
           placeholder="Search across all knowledge, clients, standards, runbooks..."
@@ -290,20 +291,10 @@
   el.setAttribute("target", "_top");
 });
 
+  
   var form = document.getElementById("oracle-search-form");
   var input = document.getElementById("oracle-search-input");
-  form.addEventListener("submit", function (e) {
-  e.preventDefault();
-  var q = input.value.trim();
-  if (!q) return;
-  var url = SEARCH_RESULTS_URL + "?q=" + encodeURIComponent(q);
-  var link = document.createElement("a");
-  link.href = url;
-  link.target = "_top";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  });
+form.setAttribute("action", SEARCH_RESULTS_URL);
 
   var canvas = document.getElementById("oracle-rain");
   var ctx = canvas.getContext("2d");
