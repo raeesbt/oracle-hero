@@ -299,7 +299,12 @@ function updateHref() {
   var q = input.value.trim();
   searchBtn.href = q ? (SEARCH_RESULTS_URL + "?q=" + encodeURIComponent(q)) : "#";
 }
-input.addEventListener("input", updateHref);
+searchBtn.addEventListener("click", function (e) {
+  updateHref();
+  if (!input.value.trim()) {
+    e.preventDefault();
+  }
+});
 input.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     e.preventDefault();
