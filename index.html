@@ -292,9 +292,21 @@
 });
 
   
-  var form = document.getElementById("oracle-search-form");
   var input = document.getElementById("oracle-search-input");
-form.setAttribute("action", SEARCH_RESULTS_URL);
+var searchBtn = document.getElementById("oracle-search-btn");
+
+function updateHref() {
+  var q = input.value.trim();
+  searchBtn.href = q ? (SEARCH_RESULTS_URL + "?q=" + encodeURIComponent(q)) : "#";
+}
+input.addEventListener("input", updateHref);
+input.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    updateHref();
+    searchBtn.click();
+  }
+});
 
   var canvas = document.getElementById("oracle-rain");
   var ctx = canvas.getContext("2d");
